@@ -1,0 +1,45 @@
+class_id,sign_name
+0,Toc do toi da 20km/h
+1,Toc do toi da 30km/h
+2,Toc do toi da 50km/h
+3,Toc do toi da 60km/h
+4,Toc do toi da 70km/h
+5,Toc do toi da 80km/h
+6,Het han che toc do 80km/h
+7,Toc do toi da 100km/h
+8,Toc do toi da 120km/h
+9,Cam vuot
+10,Cam xe tai vuot
+11,Uu tien tai noi giao nhau
+12,Duong uu tien
+13,Nhuong duong
+14,Dung lai (STOP)
+15,Cam moi loai phuong tien
+16,Cam xe tai
+17,Cam di nguoc chieu
+18,Nguy hiem khac
+19,Duong cong nguy hiem sang trai
+20,Duong cong nguy hiem sang phai
+21,Duong quanh co
+22,Duong go ghe
+23,Duong tron truot
+24,Duong bi thu hep ben phai
+25,Cong truong dang thi cong
+26,Giao tin hieu den
+27,Nguoi di bo cat ngang
+28,Tre em qua duong
+29,Nguoi di xe dap cat ngang
+30,Duong co the bi dong bang hoac tuyet
+31,Thu rung vuot qua duong
+32,Het moi lenh cam
+33,Phai re phai
+34,Phai re trai
+35,Chi duoc di thang
+36,Di thang hoac re phai
+37,Di thang hoac re trai
+38,Di vong qua ben phai
+39,Di vong qua ben trai
+40,Phai di vong xuyen
+41,Het cam vuot
+42,Het cam xe tai vuot
+

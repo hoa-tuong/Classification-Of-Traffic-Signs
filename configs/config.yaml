@@ -1,0 +1,39 @@
+# ==========================================
+# CẤU HÌNH ĐỒ ÁN PHÂN LOẠI BIỂN BÁO
+# ==========================================
+
+project:
+  name: "traffic_sign_classification"
+  device: "cuda" # 'cuda' hoặc 'cpu'
+  seed: 42
+
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  labels_path: "data/class_labels.csv"
+  img_size: [64, 64] # [width, height] hoặc 128x128
+  batch_size: 32
+  num_workers: 2
+  val_split: 0.15
+  test_split: 0.15
+
+model:
+  name: "custom_cnn" # 'custom_cnn' hoặc 'mobilenet_v3', 'resnet18'
+  num_classes: 43    # Mặc định theo bộ GTSRB (43 nhãn) hoặc tùy chỉnh theo tập dữ liệu
+  dropout_rate: 0.3
+
+training:
+  epochs: 25
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler: "step" # 'step' hoặc 'cosine'
+  step_size: 7
+  gamma: 0.5
+  early_stopping_patience: 5
+
+paths:
+  checkpoint_dir: "checkpoints"
+  best_model_path: "checkpoints/best_model.pth"
+  outputs_figure_dir: "outputs/figures"
+  outputs_log_dir: "outputs/logs"
+
