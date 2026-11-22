@@ -1,39 +1,38 @@
 # ==========================================
-# CẤU HÌNH ĐỒ ÁN PHÂN LOẠI BIỂN BÁO
+# CẤU HÌNH ĐỒ ÁN PHÂN LOẠI BIỂN BÁO GIAO THÔNG
 # ==========================================
 
 project:
-  name: "traffic_sign_classification"
-  device: "cuda" # 'cuda' hoặc 'cpu'
+  name: "vietnamese_traffic_sign_classification"
+  device: "cuda" # Tự động fallback sang cpu nếu không có CUDA
   seed: 42
 
 data:
   raw_dir: "data/raw"
   processed_dir: "data/processed"
+  summary_csv: "data/processed/dataset_summary.csv"
   labels_path: "data/class_labels.csv"
-  img_size: [64, 64] # [width, height] hoặc 128x128
-  batch_size: 32
-  num_workers: 2
-  val_split: 0.15
-  test_split: 0.15
+  img_size: [64, 64] # [width, height]
+  batch_size: 64
+  num_workers: 0     # 0 an toàn nhất trên Windows
 
 model:
-  name: "custom_cnn" # 'custom_cnn' hoặc 'mobilenet_v3', 'resnet18'
-  num_classes: 43    # Mặc định theo bộ GTSRB (43 nhãn) hoặc tùy chỉnh theo tập dữ liệu
+  name: "mobilenet_v3" # 'custom_cnn' hoặc 'mobilenet_v3'
+  num_classes: 250   # 268 lớp toàn diện (biển quy chuẩn + thực tế + OOD Non-sign)
   dropout_rate: 0.3
 
 training:
-  epochs: 25
+  epochs: 8
   learning_rate: 0.001
   weight_decay: 0.0001
-  scheduler: "step" # 'step' hoặc 'cosine'
-  step_size: 7
+  scheduler: "step"
+  step_size: 4
   gamma: 0.5
-  early_stopping_patience: 5
+  early_stopping_patience: 3
 
 paths:
   checkpoint_dir: "checkpoints"
   best_model_path: "checkpoints/best_model.pth"
   outputs_figure_dir: "outputs/figures"
   outputs_log_dir: "outputs/logs"
-
+  classification_report_path: "outputs/classification_report.txt"

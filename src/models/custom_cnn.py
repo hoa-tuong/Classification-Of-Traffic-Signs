@@ -3,9 +3,9 @@ import torch.nn as nn
 
 
 class TrafficSignCNN(nn.Module):
-    """Kien truc mang CNN tieu chuan cho bai toan phan loai bien bao."""
+    """Kien truc mang CNN tieu chuan cho bai toan phan loai 250 bien bao Viet Nam."""
 
-    def __init__(self, num_classes: int = 43, dropout_rate: float = 0.3):
+    def __init__(self, num_classes: int = 250, dropout_rate: float = 0.3):
         super().__init__()
 
         self.features = nn.Sequential(
@@ -40,15 +40,14 @@ class TrafficSignCNN(nn.Module):
         self.classifier = nn.Sequential(
             nn.AdaptiveAvgPool2d((4, 4)),
             nn.Flatten(),
-            nn.Linear(128 * 4 * 4, 256),
-            nn.BatchNorm1d(256),
+            nn.Linear(128 * 4 * 4, 512),
+            nn.BatchNorm1d(512),
             nn.ReLU(inplace=True),
             nn.Dropout(dropout_rate),
-            nn.Linear(256, num_classes)
+            nn.Linear(512, num_classes)
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.features(x)
         x = self.classifier(x)
         return x
-

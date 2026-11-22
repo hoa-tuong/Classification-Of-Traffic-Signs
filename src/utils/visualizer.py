@@ -36,16 +36,22 @@ def plot_training_history(history: dict, save_path: str | Path | None = None):
     plt.close()
 
 
-def plot_confusion_matrix(y_true, y_pred, class_names=None, save_path: str | Path | None = None):
+def plot_confusion_matrix(y_true, y_pred, class_names=None, num_classes: int | None = None, save_path: str | Path | None = None):
     """Ve va luu bieu do ma tran nham lan (Confusion Matrix)."""
-    cm = confusion_matrix(y_true, y_pred)
+    if num_classes is None:
+        if class_names is not None:
+            num_classes = len(class_names)
+        else:
+            num_classes = max(max(y_true), max(y_pred)) + 1
+
+    cm = confusion_matrix(y_true, y_pred, labels=list(range(num_classes)))
     plt.figure(figsize=(12, 10))
-    sns.heatmap(cm, annot=False, cmap="Blues", fmt="d",
+    sns.heatmap(cm, annot=False, cmap="Blues",
                 xticklabels=class_names if class_names else "auto",
                 yticklabels=class_names if class_names else "auto")
-    plt.title("Confusion Matrix")
-    plt.xlabel("Predicted Class")
-    plt.ylabel("True Class")
+    plt.title(f"Confusion Matrix ({num_classes} Classes)", fontsize=14, fontweight="bold")
+    plt.xlabel("Predicted Class ID", fontsize=11)
+    plt.ylabel("True Class ID", fontsize=11)
     plt.tight_layout()
 
     if save_path:
