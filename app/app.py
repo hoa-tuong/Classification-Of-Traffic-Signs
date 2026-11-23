@@ -24,33 +24,50 @@ st.set_page_config(
     layout="wide"
 )
 
-# Dong bo toan bo giao dien sang phong chu Times New Roman (giu nguyen nen toi)
+# Dong bo toan bo giao dien sang phong chu Times New Roman (giu nguyen nen toi va bao ve cac icon)
 st.markdown("""
 <style>
-    /* Dong bo phong chu Times New Roman cho toan bo trang web */
-    html, body, [class*="css"], [class*="st-"], .stApp {
-        font-family: 'Times New Roman', Times, serif !important;
-    }
-
-    h1, h2, h3, h4, h5, h6, p, span, div, label, button, input, textarea, select {
-        font-family: 'Times New Roman', Times, serif !important;
-    }
-
-    /* Bang du lieu, thong bao, markdown va widgets */
-    .stTable, .stDataFrame, .stAlert, .stMarkdown, .stSelectbox, .stSlider {
+    /* Dong bo phong chu Times New Roman cho cac phan tu van ban */
+    html, body, .stApp, .stMarkdown, p, h1, h2, h3, h4, h5, h6, label, 
+    .stTable, .stDataFrame, .stAlert, .stSelectbox, .stSlider, textarea {
         font-family: 'Times New Roman', Times, serif !important;
     }
 
     /* Tieu de Tabs */
-    button[data-baseweb="tab"] {
+    button[data-baseweb="tab"] p, button[data-baseweb="tab"] span {
         font-family: 'Times New Roman', Times, serif !important;
         font-size: 18px !important;
         font-weight: bold !important;
     }
 
-    /* Toan bo Sidebar */
-    section[data-testid="stSidebar"] * {
+    /* Sidebar text */
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] label {
         font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    /* KHAC PHUC LOI LIGATURE: Giu nguyen font Material Symbols / Icons goc de khong bi loi chu keyboard_double va uploadUpload */
+    [data-testid="stIconMaterial"], 
+    .material-symbols-rounded, 
+    .material-symbols-outlined, 
+    .material-icons,
+    [class*="material-symbols"],
+    [data-testid="stFileUploader"] span[data-testid="stIconMaterial"],
+    [data-testid="stSidebarCollapseButton"] *,
+    button[kind="header"] * {
+        font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', 'Material Icons', sans-serif !important;
+        font-weight: normal !important;
+        font-style: normal !important;
+        letter-spacing: normal !important;
+        text-transform: none !important;
+        display: inline-block !important;
+        white-space: nowrap !important;
+        word-wrap: normal !important;
+        direction: ltr !important;
+        -webkit-font-smoothing: antialiased !important;
     }
 
     h1 {
@@ -130,7 +147,9 @@ st.sidebar.info("""
 - **Đề tài:** Phân loại biển báo giao thông
 - **Tổng số lớp:** 250 loại biển báo giao thông chính thức Việt Nam
 - **Phân loại:** Biển cấm, Chỉ dẫn, Hiệu lệnh, Cảnh báo nguy hiểm & Biển phụ
+- **Tập dữ liệu:** 5,203 ảnh (1,703 ảnh đường phố thật + 3,500 ảnh phối cảnh 3D)
 - **Kiến trúc:** MobileNetV3 (Transfer Learning từ ImageNet)
+- **Hiệu năng:** Val Acc: 82.70% | Test Acc: 81.56%
 """)
 
 tabs = st.tabs(["🔍 Dự Đoán Ảnh Biển Báo", "📚 Danh Mục 250 Biển Báo Quy Chuẩn", "📊 Kết Quả Huấn Luyện & Đánh Giá"])
@@ -372,6 +391,19 @@ with tabs[1]:
 # TAB 3: KET QUA & DANH GIA
 with tabs[2]:
     st.subheader("📊 Báo cáo kết quả thực nghiệm và huấn luyện trên 250 lớp biển báo")
+    
+    # Cac chi so danh gia tong the tren tap Test thuc te (743 mau kiem thu)
+    m1, m2, m3, m4 = st.columns(4)
+    with m1:
+        st.metric(label="🎯 Test Accuracy", value="81.56%", delta="+46.56% vs Baseline")
+    with m2:
+        st.metric(label="📈 Macro Precision", value="81.35%")
+    with m3:
+        st.metric(label="🔄 Macro Recall", value="81.12%")
+    with m4:
+        st.metric(label="⭐ Macro F1-Score", value="79.31%")
+
+    st.markdown("---")
     col_g1, col_g2 = st.columns(2)
 
     loss_curve_path = PROJECT_ROOT / "outputs" / "figures" / "loss_acc_curve.png"
