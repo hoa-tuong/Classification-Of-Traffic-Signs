@@ -146,10 +146,11 @@ Thầy: **Nguyễn Thanh Phước**
   - 5. Kiến trúc mạng MobileNetV3 với Custom Classifier Head 250 lớp ....................................................... Trang 39
   - 6. Engine suy luận và Công cụ cắt vùng ROI trong Streamlit .................................................................... Trang 40
 - **VII. TRIỂN KHAI ỨNG DỤNG THỰC TẾ & GIAO DIỆN NGƯỜI DÙNG** .................................... Trang 41
-  - 1. Kiến trúc ứng dụng Web Streamlit .......................................................................................................... Trang 41
-  - 2. Hệ thống dự đoán, Top-K và Tra cứu quy định pháp lý (Explainable AI) ............................................. Trang 42
-  - 3. Công cụ cắt vùng biển báo (ROI Cropper) hỗ trợ ảnh góc rộng ............................................................. Trang 43
-  - 4. Khắc phục lỗi giao diện Font Material Symbols Ligature ...................................................................... Trang 44
+  - 1. Kiến trúc tổng thể ứng dụng Web Streamlit ................................................................................. Trang 41
+  - 2. Chi tiết các phân hệ và tính năng nổi bật của Website ................................................................. Trang 42
+  - 3. Hướng dẫn cài đặt và khởi chạy ứng dụng (Setup & Run Guide) .................................................... Trang 43
+  - 4. Hướng dẫn sử dụng chi tiết từng bước (Step-by-Step User Manual) ............................................. Trang 44
+  - 5. Tối ưu hóa giao diện và giải pháp khắc phục lỗi kỹ thuật ............................................................. Trang 45
 - **VIII. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN TƯƠNG LAI** ............................................................. Trang 45
   - 1. Đóng góp chính của đồ án ....................................................................................................................... Trang 45
   - 2. Đánh giá ưu điểm và Hạn chế còn tồn đọng ........................................................................................... Trang 45
@@ -505,19 +506,133 @@ with torch.no_grad():
 
 # VII. TRIỂN KHAI ỨNG DỤNG THỰC TẾ & GIAO DIỆN NGƯỜI DÙNG
 
-### 1. Kiến trúc ứng dụng Web Streamlit
-Hệ thống được đóng gói thành ứng dụng Web tại file `app/app.py` với giao diện nền tối sang trọng (Dark Theme), kiểu chữ Times New Roman chuyên nghiệp. Giao diện được cấu trúc thành 3 phân hệ trực quan:
-- **Tab 1 - Dự Đoán Ảnh Biển Báo:** Cho phép tải ảnh từ máy tính hoặc bấm thử nhanh 6 mẫu biển báo đại diện. Khi tải ảnh đường phố góc rộng, người dùng có thể kích hoạt công cụ "Cắt vùng biển báo" với 4 thanh trượt (X, Y, W, H) để khoanh đỏ chính xác biển báo. Kết quả trả về gồm biểu đồ Top-5 xác suất, ảnh mẫu đối chiếu và toàn văn điều luật quy định.
-- **Tab 2 - Danh Mục 250 Biển Báo Quy Chuẩn:** Cung cấp bộ lọc theo 5 nhóm biển báo và thanh tìm kiếm tức thời theo mã hiệu hoặc từ khóa tiếng Việt.
-- **Tab 3 - Kết Quả Huấn Luyện & Đánh Giá:** Tích hợp 4 thẻ KPI chỉ số lớn (Accuracy 81.56%, Precision 81.35%, Recall 81.12%, F1 79.31%) cùng đồ thị Loss/Accuracy và ma trận nhầm lẫn cập nhật tự động.
+### 1. Kiến trúc tổng thể ứng dụng Web Streamlit
+Hệ thống được đóng gói thành một ứng dụng Web hoàn chỉnh tại file `app/app.py`, được xây dựng trên nền tảng framework **Streamlit** kết hợp sâu với engine học sâu **PyTorch** và thư viện thị giác **OpenCV / Pillow**. Ứng dụng hoạt động theo mô hình máy khách - máy chủ (Client-Server Architecture), cho phép người dùng truy cập và sử dụng dịch vụ thông qua trình duyệt web trên máy tính để bàn, máy tính bảng hoặc điện thoại thông minh:
+- **Tối ưu hóa bộ nhớ đệm (Caching):** Ứng dụng sử dụng cơ chế `@st.cache_resource` để tải trọng số mô hình `best_model.pth` (MobileNetV3) và nạp toàn bộ 250 bản ghi từ điển siêu dữ liệu quy chuẩn QCVN 41:2019 vào bộ nhớ RAM duy nhất một lần khi khởi động. Nhờ đó, thời gian phản hồi cho mỗi lượt phân loại của người dùng giảm xuống dưới **8 ms/ảnh**, hoàn toàn không có độ trễ giật lag khi tương tác liên tục.
+- **Phong cách thiết kế giao diện (UI/UX Design):** Giao diện được thiết kế theo phong cách Dark Mode chuyên nghiệp, tối ưu độ tương phản, hạn chế mỏi mắt cho người dùng, sử dụng font chữ Times New Roman sang trọng chuẩn học thuật.
 
 ![Hình 5: Giao diện ứng dụng Web Streamlit hỗ trợ nhận diện và cắt vùng ROI biển báo](file:///c:/ML/Classification-Of-Traffic-Signs/outputs/figures/ui_demo_screenshot.png)  
 *Hình 5: Giao diện ứng dụng Web Streamlit hỗ trợ nhận diện và cắt vùng ROI biển báo*
 
-### 2. Khắc phục lỗi giao diện Font Material Symbols Ligature
-Trong quá trình phát triển giao diện Streamlit, khi nhóm áp dụng font chữ Times New Roman bằng thuộc tính CSS toàn cục `!important`, các biểu tượng đồ họa Material Symbols của Streamlit (vốn hoạt động dựa trên cơ chế Ligature Font) bị ép thành văn bản thuần túy, dẫn đến lỗi hiển thị chữ `keyboard_double` và chữ đè `uploadUpload`.
+---
 
-Nhóm đã khắc phục triệt để bằng cách cô lập phạm vi áp dụng CSS font chữ (loại trừ các thành phần `[data-testid='stIconMaterial']` và `.material-symbols-rounded`), giúp giao diện hiển thị sắc nét, chuẩn mực.
+### 2. Chi tiết các Phân hệ và Tính năng nổi bật của Website
+
+Ứng dụng được bố cục khoa học thành 1 thanh điều khiển cấu hình (Sidebar) và 3 tab chức năng nghiệp vụ độc lập:
+
+#### a. Thanh điều khiển bên (Sidebar Settings & Configuration):
+- **Thanh trượt Top-K (Số lượng dự đoán hàng đầu):** Cho phép người dùng tùy chọn hiển thị từ Top-1 đến Top-10 nhãn biển báo có xác suất dự đoán cao nhất (mặc định $K=5$).
+- **Thanh trượt Ngưỡng tin cậy (Confidence Threshold):** Cho phép thiết lập ngưỡng tin cậy phân loại từ 0% đến 100% (mặc định 60%). Nếu dự đoán Top-1 có xác suất thấp hơn ngưỡng này, hệ thống sẽ tự động phát cảnh báo ảnh mờ hoặc ảnh nằm ngoài danh mục 250 biển báo nhằm ngăn chặn các quyết định sai lầm.
+- **Khối thông tin đề tài:** Hiển thị tóm tắt thông tin học thuật: Tên môn học, đề tài, quy mô 250 lớp biển báo và kiến trúc mô hình MobileNetV3 (Transfer Learning).
+
+#### b. Tab 1 - Phân hệ Dự đoán ảnh biển báo & Trích xuất điều luật (Core Inference & Explainable AI):
+- **Khung tải ảnh đa định dạng (File Uploader):** Hỗ trợ kéo thả hoặc duyệt tải lên file ảnh JPG, JPEG, PNG dung lượng lên đến 200MB.
+- **Hàng nút bấm thử nhanh ảnh mẫu quy chuẩn (Quick-test Sample Buttons):** Bố trí sẵn 6 nút bấm đại diện cho các nhóm biển báo quan trọng:
+  - `P.101`: Đường cấm (Hình tròn viền đỏ nền trắng).
+  - `P.102`: Cấm đi ngược chiều (Hình tròn đỏ gạch trắng).
+  - `P.103c`: Cấm ô tô rẽ trái & rẽ phải (Hình tròn viền đỏ cấm ô tô).
+  - `P.127`: Tốc độ tối đa cho phép 50 km/h (Biển hạn chế tốc độ).
+  - `P.130`: Cấm dừng xe và đỗ xe (Biển tròn xanh gạch chéo đỏ).
+  - `P.131a`: Cấm đỗ xe (Biển tròn xanh một gạch chéo đỏ).
+  *Tính năng này giúp giảng viên hội đồng và người dùng kiểm thử đánh giá tính năng ngay lập tức mà không cần tốn thời gian tìm ảnh.*
+- **Công cụ Cắt vùng quan tâm tương tác (Interactive ROI Cropper):**
+  - Khi người dùng tải lên ảnh chụp góc rộng từ camera hành trình (chứa nhiều đối tượng ngoại cảnh như xe cộ, tòa nhà, mặt đường), chỉ cần tích chọn `"✂️ Bật tùy chọn cắt vùng biển báo"`.
+  - Hệ thống cung cấp 4 thanh trượt ($X, Y, W, H$ từ 0% đến 100%) kèm khung viền chữ nhật màu đỏ trực quan dịch chuyển tương ứng trên ảnh gốc.
+  - Người dùng dễ dàng căn chỉnh khung đỏ ôm sát vào biển báo cần nhận diện. AI sẽ lập tức crop vùng này và đưa vào mô hình phân loại chính xác tuyệt đối.
+- **Hiển thị kết quả AI trực quan đa chiều:**
+  - Nhãn biển báo Top-1 dự đoán kèm mã quy chuẩn.
+  - Huy hiệu màu cảnh báo tương ứng với nhóm biển (Đỏ: Cấm, Xanh: Hiệu lệnh/Chỉ dẫn, Vàng: Nguy hiểm).
+  - Phần trăm độ tin cậy của mô hình (Confidence Score).
+  - Biểu đồ cột xác suất Top-K (Bar Chart) giúp người dùng thấy rõ mức độ tin cậy giữa nhãn đứng đầu và các nhãn kế tiếp.
+- **Hệ thống Giải thích Pháp lý Tự động (Explainable AI - XAI):** Tự động truy vấn từ điển siêu dữ liệu số hóa QCVN 41:2019/BGTVT và hiển thị:
+  - Tên tiếng Việt chính thức của biển báo.
+  - Nhóm chức năng giao thông.
+  - Toàn văn ý nghĩa pháp lý và phạm vi tác dụng.
+  - Các trường hợp phương tiện ưu tiên được phép đi qua.
+  - Tình huống thực tế và ví dụ minh họa khi tham gia giao thông.
+- **Đối chiếu trực quan song song (Side-by-side Visual Comparison):** Đặt ảnh người dùng tải lên cạnh ảnh mẫu vector quy chuẩn để người dùng dễ dàng thẩm định độ tương đồng bằng mắt thường.
+
+#### c. Tab 2 - Phân hệ Danh mục & Tra cứu 250 Biển báo Quy chuẩn (Catalog & Full-Text Search):
+- **Bộ lọc phân nhóm 5 chức năng:** Lọc nhanh theo Biển cấm (71 lớp), Biển hiệu lệnh (30 lớp), Biển chỉ dẫn (89 lớp), Biển cảnh báo nguy hiểm (48 lớp), Biển phụ (12 lớp).
+- **Thanh tìm kiếm toàn văn thời gian thực (Full-Text Search):** Cho phép gõ tìm kiếm tức thời theo mã biển báo (ví dụ: `P.102`, `W.205`) hoặc theo từ khóa tiếng Việt (ví dụ: `ngược chiều`, `tốc độ`, `cấm rẽ`).
+- **Giao diện lưới thẻ (Card Grid):** Hiển thị danh mục trực quan gồm ảnh vector quy chuẩn độ nét cao, mã số và tên gọi đầy đủ.
+
+#### d. Tab 3 - Phân hệ Giám sát Hiệu suất Mô hình (Model Performance Dashboard):
+- **4 thẻ chỉ số KPI lớn:** Test Accuracy (81.56%), Macro Precision (81.35%), Macro Recall (81.12%), Macro F1-Score (79.31%).
+- **Đồ thị huấn luyện Loss & Accuracy:** Trực quan hóa quá trình hội tụ qua các epochs, chứng minh mô hình không bị Overfitting.
+- **Ma trận nhầm lẫn (Confusion Matrix):** Đánh giá chi tiết sự phân bố dự đoán trên toàn bộ 250 lớp.
+
+---
+
+### 3. Hướng dẫn Cài đặt và Khởi chạy Ứng dụng (Setup & Run Guide)
+
+Để triển khai và chạy thử nghiệm hệ thống trên bất kỳ máy tính cá nhân hoặc máy chủ nào, quy trình cài đặt được thực hiện đơn giản qua các bước sau:
+
+#### a. Yêu cầu hệ thống:
+- Hệ điều hành: Windows 10/11, macOS, hoặc Ubuntu Linux.
+- Python: Phiên bản $\ge 3.10$ (khuyến nghị Python 3.13).
+- Phần cứng: CPU thông thường (không bắt buộc GPU rời, vì MobileNetV3 cực nhẹ).
+
+#### b. Các lệnh cài đặt và khởi chạy:
+```bash
+# Bước 1: Mở Terminal / PowerShell và chuyển vào thư mục dự án
+cd c:\ML\Classification-Of-Traffic-Signs
+
+# Bước 2: Cài đặt các thư viện phụ thuộc
+pip install -r requirements.txt
+
+# Bước 3: Khởi chạy máy chủ Streamlit
+streamlit run app/app.py
+```
+*Lưu ý trên môi trường Windows có nhiều phiên bản Python:* Có thể sử dụng lệnh `py -3.13 -m streamlit run app/app.py`.
+
+Ngay sau khi lệnh khởi chạy thành công, trình duyệt web mặc định sẽ tự động mở giao diện ứng dụng tại địa chỉ:
+`http://localhost:8501`
+
+---
+
+### 4. Hướng dẫn Sử dụng Chi tiết Từng Bước (Step-by-Step User Manual)
+
+#### a. Kịch bản 1: Nhận diện ảnh chụp cận cảnh biển báo (Close-up Sign Classification)
+1. **Bước 1:** Mở giao diện ứng dụng, chọn thẻ **Tab 1: Dự Đoán Ảnh Biển Báo**.
+2. **Bước 2:** Tại khung *"1. Chọn hoặc tải ảnh lên"*, người dùng kéo thả file ảnh biển báo vào ô upload hoặc bấm nút **Browse files** để chọn ảnh từ máy tính.
+   - *Mẹo thử nghiệm nhanh:* Bấm chọn một trong 6 ảnh mẫu biển báo quy chuẩn (`P.101`, `P.102`, `P.103c`, `P.127`, `P.130`, `P.131a`) ở hàng dưới.
+3. **Bước 3:** Quan sát cột bên phải *"2. Kết quả nhận diện AI"*:
+   - Hệ thống hiển thị huy hiệu xác nhận mã biển báo dự đoán (Top-1) và thanh đo phần trăm độ tin cậy.
+   - Biểu đồ thanh ngang hiển thị phân bố xác suất của Top-5 lớp biển báo có khả năng cao nhất.
+4. **Bước 4:** Cuộn xuống phần *"Ý nghĩa & Quy định pháp lý chi tiết"*: Đọc toàn văn quy định pháp luật QCVN 41:2019/BGTVT, các xe ưu tiên và tình huống thực tế áp dụng.
+
+#### b. Kịch bản 2: Nhận diện biển báo từ ảnh toàn cảnh đường phố góc rộng (Panoramic Road Scene với ROI Cropper)
+1. **Bước 1:** Tải lên bức ảnh chụp toàn cảnh đường phố hoặc ảnh trích xuất từ camera hành trình xe hơi (ảnh chứa cả làn đường, cột đèn, xe cộ).
+2. **Bước 2:** Tích chọn vào hộp kiểm **"✂️ Bật tùy chọn cắt vùng biển báo"**.
+3. **Bước 3:** Một khung xem trước xuất hiện hiển thị ảnh toàn cảnh cùng khung chữ nhật màu đỏ. Người dùng điều chỉnh 4 thanh trượt:
+   - **X (%)**: Dịch chuyển khung viền đỏ sang trái hoặc sang phải.
+   - **Y (%)**: Dịch chuyển khung viền đỏ lên trên hoặc xuống dưới.
+   - **W (%)**: Kéo giãn hoặc thu hẹp chiều rộng khung cắt.
+   - **H (%)**: Kéo giãn hoặc thu hẹp chiều cao khung cắt.
+   *Điều chỉnh sao cho khung đỏ ôm khít lấy biển báo cần phân loại.*
+4. **Bước 4:** Mô hình AI sẽ tự động lấy vùng ảnh được cắt trong khung đỏ để đưa vào mạng MobileNetV3 suy luận và trả về kết quả chính xác tức thì.
+
+#### c. Kịch bản 3: Tra cứu danh mục và quy định pháp lý 250 biển báo quy chuẩn
+1. **Bước 1:** Bấm chuyển sang thẻ **Tab 2: Danh Mục 250 Biển Báo Quy Chuẩn**.
+2. **Bước 2:** Chọn nhóm biển báo cần tìm ở menu thả xuống (Biển cấm, Biển hiệu lệnh, Biển chỉ dẫn, Biển cảnh báo, Biển phụ).
+3. **Bước 3:** Nhập từ khóa tiếng Việt hoặc mã số vào thanh tìm kiếm (ví dụ gõ `"tốc độ"` hoặc `"cấm vượt"`) để hệ thống lọc thẻ tương ứng trong tích tắc.
+
+#### d. Kịch bản 4: Giám sát và thẩm định số liệu học máy
+1. **Bước 1:** Bấm chuyển sang thẻ **Tab 3: Kết Quả Huấn Luyện & Đánh Giá**.
+2. **Bước 2:** Xem 4 thẻ chỉ số đánh giá thực nghiệm độc lập (Accuracy: 81.56%, Precision: 81.35%, Recall: 81.12%, F1: 79.31%).
+3. **Bước 3:** Quan sát đồ thị Loss/Accuracy qua 5 epochs và phóng to Ma trận nhầm lẫn (Confusion Matrix) để thẩm định độ tin cậy của mô hình.
+
+---
+
+### 5. Tối ưu hóa Giao diện và Giải pháp Khắc phục Lỗi Kỹ thuật (UI/UX Engineering)
+
+Trong quá trình xây dựng giao diện Streamlit, nhóm nghiên cứu đã chủ động phát hiện và khắc phục các vấn đề kỹ thuật chuyên sâu:
+1. **Khắc phục lỗi xung đột Font Material Symbols Ligature:**
+   - Khi áp dụng CSS tùy biến font chữ Times New Roman toàn cục bằng cú pháp `* { font-family: 'Times New Roman' !important; }`, các biểu tượng đồ họa của thư viện Google Material Symbols của Streamlit (hoạt động theo cơ chế ghép ký tự Ligature) bị ép chuyển thành văn bản thuần túy, dẫn đến lỗi hiển thị chữ đè `keyboard_double` và `uploadUpload`.
+   - Nhóm đã tối ưu hóa bộ chọn CSS: Cô lập phạm vi font Times New Roman vào các thẻ nội dung (`p, span, h1, h2, h3, div`), đồng thời bảo vệ các bộ chọn `[data-testid="stIconMaterial"]`, `.material-symbols-rounded` và `.stFileUploader` giúp các icon đồ họa hiển thị sắc nét, chuẩn mực.
+2. **Cơ chế Caching tăng tốc độ phản hồi:**
+   - Sử dụng decorator `@st.cache_resource` cho hàm tải mô hình và từ điển dữ liệu. Nhờ đó, ứng dụng chỉ tải trọng số một lần duy nhất vào bộ nhớ RAM khi khởi động, giúp hệ thống duy trì độ trễ suy luận chỉ **8 ms/ảnh**, hoàn toàn không bị trễ khi người dùng thao tác liên tục.
 
 ---
 

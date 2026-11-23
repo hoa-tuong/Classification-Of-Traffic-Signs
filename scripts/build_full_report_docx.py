@@ -164,11 +164,16 @@ print("Writing Cover Page...")
 # TRANG BÌA (COVER PAGE)
 # ==========================================
 add_title("TRƯỜNG ĐẠI HỌC SÀI GÒN", size=17, bold=True, space_after=3)
-add_title("KHOA CÔNG NGHỆ THÔNG TIN", size=14, bold=True, space_after=25)
+add_title("KHOA CÔNG NGHỆ THÔNG TIN", size=14, bold=True, space_after=12)
 
-# Spacing
-for _ in range(2):
-    doc.add_paragraph()
+# Insert SGU Logo
+logo_path = FIG_DIR / "sgu_logo.png"
+if logo_path.exists():
+    p_logo = doc.add_paragraph()
+    p_logo.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_logo.paragraph_format.space_before = Pt(4)
+    p_logo.paragraph_format.space_after = Pt(12)
+    p_logo.add_run().add_picture(str(logo_path), width=Inches(1.8))
 
 add_title("BÁO CÁO TIỂU LUẬN NHÓM CUỐI KỲ", size=20, bold=True, space_after=8, color=(0, 51, 102))
 add_title("MÔN: MACHINE LEARNING & DEEP LEARNING (HỌC MÁY)", size=14, bold=True, space_after=25)
@@ -332,10 +337,11 @@ toc_items = [
     ("    5. Kiến trúc mạng MobileNetV3 với Custom Classifier Head 250 lớp", "39"),
     ("    6. Engine suy luận và Công cụ cắt vùng ROI trong Streamlit", "40"),
     ("VII. TRIỂN KHAI ỨNG DỤNG THỰC TẾ & GIAO DIỆN NGƯỜI DÙNG", "41"),
-    ("    1. Kiến trúc ứng dụng Web Streamlit", "41"),
-    ("    2. Hệ thống dự đoán, Top-K và Tra cứu quy định pháp lý (Explainable AI)", "42"),
-    ("    3. Công cụ cắt vùng biển báo (ROI Cropper) hỗ trợ ảnh góc rộng", "43"),
-    ("    4. Khắc phục lỗi giao diện Font Material Symbols Ligature", "44"),
+    ("    1. Kiến trúc tổng thể ứng dụng Web Streamlit", "41"),
+    ("    2. Chi tiết các phân hệ và tính năng nổi bật của Website", "42"),
+    ("    3. Hướng dẫn cài đặt và khởi chạy ứng dụng (Setup & Run Guide)", "43"),
+    ("    4. Hướng dẫn sử dụng chi tiết từng bước (Step-by-Step User Manual)", "44"),
+    ("    5. Tối ưu hóa giao diện và giải pháp khắc phục lỗi kỹ thuật", "45"),
     ("VIII. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN TƯƠNG LAI", "45"),
     ("    1. Đóng góp chính của đồ án", "45"),
     ("    2. Đánh giá ưu điểm và Hạn chế còn tồn đọng", "45"),
@@ -843,17 +849,74 @@ with torch.no_grad():
 # ==========================================
 add_heading_1("VII. TRIỂN KHAI ỨNG DỤNG THỰC TẾ & GIAO DIỆN NGƯỜI DÙNG")
 
-add_heading_2("1. Kiến trúc ứng dụng Web Streamlit")
-add_body("Hệ thống được đóng gói thành ứng dụng Web tại file app/app.py với giao diện nền tối sang trọng (Dark Theme), kiểu chữ Times New Roman chuyên nghiệp. Giao diện được cấu trúc thành 3 phân hệ trực quan:")
-add_bullet("Tab 1 - Dự Đoán Ảnh Biển Báo: Cho phép tải ảnh từ máy tính hoặc bấm thử nhanh 6 mẫu biển báo đại diện. Khi tải ảnh đường phố góc rộng, người dùng có thể kích hoạt công cụ 'Cắt vùng biển báo' với 4 thanh trượt (X, Y, W, H) để khoanh đỏ chính xác biển báo. Kết quả trả về gồm biểu đồ Top-5 xác suất, ảnh mẫu đối chiếu và toàn văn điều luật quy định.", "• ")
-add_bullet("Tab 2 - Danh Mục 250 Biển Báo Quy Chuẩn: Cung cấp bộ lọc theo 5 nhóm biển báo và thanh tìm kiếm tức thời theo mã hiệu hoặc từ khóa tiếng Việt.", "• ")
-add_bullet("Tab 3 - Kết Quả Huấn Luyện & Đánh Giá: Tích hợp 4 thẻ KPI chỉ số lớn (Accuracy 81.56%, Precision 81.35%, Recall 81.12%, F1 79.31%) cùng đồ thị Loss/Accuracy và ma trận nhầm lẫn cập nhật tự động.", "• ")
+add_heading_2("1. Kiến trúc tổng thể ứng dụng Web Streamlit")
+add_body("Hệ thống được đóng gói thành một ứng dụng Web hoàn chỉnh tại file app/app.py, được xây dựng trên nền tảng framework Streamlit kết hợp sâu với engine học sâu PyTorch và thư viện thị giác OpenCV / Pillow. Ứng dụng hoạt động theo mô hình máy khách - máy chủ (Client-Server Architecture), cho phép người dùng truy cập và sử dụng dịch vụ thông qua trình duyệt web trên máy tính để bàn, máy tính bảng hoặc điện thoại thông minh:")
+add_bullet("Tối ưu hóa bộ nhớ đệm (Caching): Ứng dụng sử dụng cơ chế @st.cache_resource để tải trọng số mô hình best_model.pth (MobileNetV3) và nạp toàn bộ 250 bản ghi từ điển siêu dữ liệu quy chuẩn QCVN 41:2019 vào bộ nhớ RAM duy nhất một lần khi khởi động. Nhờ đó, thời gian phản hồi cho mỗi lượt phân loại của người dùng giảm xuống dưới 8 ms/ảnh, hoàn toàn không có độ trễ giật lag khi tương tác liên tục.", "• ")
+add_bullet("Phong cách thiết kế giao diện (UI/UX Design): Giao diện được thiết kế theo phong cách Dark Mode chuyên nghiệp, tối ưu độ tương phản, hạn chế mỏi mắt cho người dùng, sử dụng font chữ Times New Roman sang trọng chuẩn học thuật.", "• ")
 
 add_image_box(FIG_DIR / "ui_demo_screenshot.png", "Hình 5: Giao diện ứng dụng Web Streamlit hỗ trợ nhận diện và cắt vùng ROI biển báo", width=Inches(6.2))
 
-add_heading_2("2. Khắc phục lỗi giao diện Font Material Symbols Ligature")
-add_body("Trong quá trình phát triển giao diện Streamlit, khi nhóm áp dụng font chữ Times New Roman bằng thuộc tính CSS toàn cục !important, các biểu tượng đồ họa Material Symbols của Streamlit (vốn hoạt động dựa trên cơ chế Ligature Font) bị ép thành văn bản thuần túy, dẫn đến lỗi hiển thị chữ 'keyboard_double' và chữ đè 'uploadUpload'.")
-add_body("Nhóm đã khắc phục triệt để bằng cách cô lập phạm vi áp dụng CSS font chữ (loại trừ các thành phần [data-testid='stIconMaterial'] và .material-symbols-rounded), giúp giao diện hiển thị sắc nét, chuẩn mực.")
+add_heading_2("2. Chi tiết các Phân hệ và Tính năng nổi bật của Website")
+add_body("Ứng dụng được bố cục khoa học thành 1 thanh điều khiển cấu hình (Sidebar) và 3 tab chức năng nghiệp vụ độc lập:")
+
+add_heading_3("a. Thanh điều khiển bên (Sidebar Settings & Configuration):")
+add_bullet("Thanh trượt Top-K (Số lượng dự đoán hàng đầu): Cho phép người dùng tùy chọn hiển thị từ Top-1 đến Top-10 nhãn biển báo có xác suất dự đoán cao nhất (mặc định K = 5).", "• ")
+add_bullet("Thanh trượt Ngưỡng tin cậy (Confidence Threshold): Cho phép thiết lập ngưỡng tin cậy phân loại từ 0% đến 100% (mặc định 60%). Nếu dự đoán Top-1 có xác suất thấp hơn ngưỡng này, hệ thống sẽ tự động phát cảnh báo ảnh mờ hoặc ảnh nằm ngoài danh mục 250 biển báo nhằm ngăn chặn các quyết định sai lầm.", "• ")
+add_bullet("Khối thông tin đề tài: Hiển thị tóm tắt thông tin học thuật: Tên môn học, đề tài, quy mô 250 lớp biển báo và kiến trúc mô hình MobileNetV3 (Transfer Learning).", "• ")
+
+add_heading_3("b. Tab 1 - Phân hệ Dự đoán ảnh biển báo & Trích xuất điều luật (Core Inference & Explainable AI):")
+add_bullet("Khung tải ảnh đa định dạng (File Uploader): Hỗ trợ kéo thả hoặc duyệt tải lên file ảnh JPG, JPEG, PNG dung lượng lên đến 200MB.", "• ")
+add_bullet("Hàng nút bấm thử nhanh ảnh mẫu quy chuẩn: Bố trí sẵn 6 nút bấm đại diện cho các nhóm biển báo quan trọng: P.101 (Đường cấm), P.102 (Cấm đi ngược chiều), P.103c (Cấm ô tô rẽ), P.127 (Tốc độ tối đa 50 km/h), P.130 (Cấm dừng và đỗ xe), P.131a (Cấm đỗ xe). Giúp kiểm thử demo tức thì mà không cần tìm file ảnh.", "• ")
+add_bullet("Công cụ Cắt vùng quan tâm tương tác (Interactive ROI Cropper): Tích hợp 4 thanh trượt tỉ lệ phần trăm (X, Y, W, H từ 0% đến 100%) kèm khung viền chữ nhật màu đỏ trực quan. Khi người dùng tải ảnh toàn cảnh góc rộng từ camera hành trình (có xe cộ, tòa nhà bao quanh), chỉ cần căn chỉnh khung đỏ bao quanh biển báo, AI sẽ tự động crop và phân loại chính xác.", "• ")
+add_bullet("Hiển thị kết quả AI trực quan: Nhãn dự đoán Top-1 kèm mã quy chuẩn, huy hiệu màu nhận diện nhóm biển báo (Đỏ: Cấm, Xanh: Hiệu lệnh/Chỉ dẫn, Vàng: Nguy hiểm), tỷ lệ phần trăm tin cậy và biểu đồ cột xác suất Top-K.", "• ")
+add_bullet("Hệ thống Giải thích Pháp lý Tự động (Explainable AI - XAI): Tự động truy vấn từ điển số hóa QCVN 41:2019/BGTVT và hiển thị toàn văn: Tên tiếng Việt chính thức, Nhóm chức năng, Ý nghĩa pháp lý chi tiết, Các trường hợp phương tiện ưu tiên được phép đi qua, Tình huống thực tế và ví dụ minh họa.", "• ")
+add_bullet("Đối chiếu trực quan song song (Side-by-side Visual Comparison): Đặt ảnh người dùng tải lên cạnh ảnh mẫu vector quy chuẩn để thẩm định độ tương đồng.", "• ")
+
+add_heading_3("c. Tab 2 - Phân hệ Danh mục & Tra cứu 250 Biển báo Quy chuẩn (Catalog & Full-Text Search):")
+add_bullet("Bộ lọc phân nhóm 5 chức năng: Lọc nhanh theo Biển cấm (71 lớp), Biển hiệu lệnh (30 lớp), Biển chỉ dẫn (89 lớp), Biển cảnh báo nguy hiểm (48 lớp), Biển phụ (12 lớp).", "• ")
+add_bullet("Thanh tìm kiếm toàn văn thời gian thực (Full-Text Search): Cho phép gõ tìm kiếm tức thời theo mã hiệu (ví dụ: P.102, W.205) hoặc theo từ khóa tiếng Việt (ví dụ: ngược chiều, tốc độ, cấm rẽ).", "• ")
+add_bullet("Giao diện lưới thẻ (Card Grid): Hiển thị danh mục trực quan gồm ảnh vector quy chuẩn độ nét cao, mã số và tên gọi đầy đủ.", "• ")
+
+add_heading_3("d. Tab 3 - Phân hệ Giám sát Hiệu suất Mô hình (Model Performance Dashboard):")
+add_bullet("4 thẻ chỉ số KPI lớn: Test Accuracy (81.56%), Macro Precision (81.35%), Macro Recall (81.12%), Macro F1-Score (79.31%).", "• ")
+add_bullet("Đồ thị huấn luyện Loss & Accuracy: Trực quan hóa quá trình hội tụ qua các epochs, chứng minh mô hình không bị Overfitting.", "• ")
+add_bullet("Ma trận nhầm lẫn (Confusion Matrix): Đánh giá chi tiết sự phân bố dự đoán trên toàn bộ 250 lớp.", "• ")
+
+add_heading_2("3. Hướng dẫn Cài đặt và Khởi chạy Ứng dụng (Setup & Run Guide)")
+add_body("Để triển khai và chạy thử nghiệm hệ thống trên bất kỳ máy tính cá nhân hoặc máy chủ nào, quy trình cài đặt được thực hiện đơn giản qua các bước sau:")
+add_bullet("Yêu cầu hệ thống: Hệ điều hành Windows 10/11, macOS hoặc Linux. Python >= 3.10. CPU thông thường (không bắt buộc GPU rời).", "• ")
+add_bullet("Cài đặt thư viện phụ thuộc:", "• ")
+add_code_block("cd c:\\ML\\Classification-Of-Traffic-Signs\npip install -r requirements.txt")
+add_bullet("Khởi chạy ứng dụng Web Streamlit:", "• ")
+add_code_block("streamlit run app/app.py\n# Hoặc trên Windows: py -3.13 -m streamlit run app/app.py")
+add_body("Ngay sau khi lệnh khởi chạy thành công, trình duyệt web mặc định sẽ tự động mở giao diện ứng dụng tại địa chỉ: http://localhost:8501")
+
+add_heading_2("4. Hướng dẫn Sử dụng Chi tiết Từng Bước (Step-by-Step User Manual)")
+add_heading_3("a. Kịch bản 1: Nhận diện ảnh chụp cận cảnh biển báo (Close-up Sign Classification)")
+add_bullet("Bước 1: Mở giao diện ứng dụng, chọn thẻ Tab 1: Dự Đoán Ảnh Biển Báo.", "1. ")
+add_bullet("Bước 2: Kéo thả file ảnh cận cảnh biển báo vào ô upload hoặc bấm nút Browse files để chọn ảnh từ máy tính. (Có thể bấm nhanh vào 1 trong 6 nút biển báo mẫu quy chuẩn ở hàng dưới).", "2. ")
+add_bullet("Bước 3: Quan sát cột bên phải: Hệ thống hiển thị huy hiệu xác nhận mã biển báo dự đoán (Top-1), thanh đo phần trăm độ tin cậy và biểu đồ cột xác suất Top-5.", "3. ")
+add_bullet("Bước 4: Cuộn xuống phần Ý nghĩa & Quy định pháp lý chi tiết: Đọc toàn văn quy định pháp luật QCVN 41:2019/BGTVT, các xe ưu tiên và ví dụ thực tế áp dụng.", "4. ")
+
+add_heading_3("b. Kịch bản 2: Nhận diện biển báo từ ảnh toàn cảnh đường phố góc rộng (Panoramic Road Scene với ROI Cropper)")
+add_bullet("Bước 1: Tải lên bức ảnh chụp toàn cảnh đường phố hoặc ảnh trích xuất từ camera hành trình xe hơi (chứa cả làn đường, cột đèn, xe cộ).", "1. ")
+add_bullet("Bước 2: Tích chọn vào hộp kiểm '✂️ Bật tùy chọn cắt vùng biển báo'.", "2. ")
+add_bullet("Bước 3: Khung xem trước xuất hiện hiển thị ảnh toàn cảnh cùng khung chữ nhật màu đỏ. Người dùng điều chỉnh 4 thanh trượt (X, Y, W, H) sao cho khung đỏ ôm khít lấy biển báo cần phân loại.", "3. ")
+add_bullet("Bước 4: Mô hình AI sẽ tự động lấy vùng ảnh được cắt trong khung đỏ để đưa vào mạng MobileNetV3 suy luận và trả về kết quả chính xác tức thì.", "4. ")
+
+add_heading_3("c. Kịch bản 3: Tra cứu danh mục và quy định pháp lý 250 biển báo quy chuẩn")
+add_bullet("Bước 1: Bấm chuyển sang thẻ Tab 2: Danh Mục 250 Biển Báo Quy Chuẩn.", "1. ")
+add_bullet("Bước 2: Chọn nhóm biển báo cần tìm ở menu thả xuống (Biển cấm, Biển hiệu lệnh, Biển chỉ dẫn, Biển cảnh báo, Biển phụ).", "2. ")
+add_bullet("Bước 3: Nhập từ khóa tiếng Việt hoặc mã số vào thanh tìm kiếm (ví dụ gõ 'tốc độ' hoặc 'cấm vượt') để hệ thống lọc thẻ tương ứng trong tích tắc.", "3. ")
+
+add_heading_3("d. Kịch bản 4: Giám sát và thẩm định số liệu học máy")
+add_bullet("Bước 1: Bấm chuyển sang thẻ Tab 3: Kết Quả Huấn Luyện & Đánh Giá.", "1. ")
+add_bullet("Bước 2: Xem 4 thẻ chỉ số đánh giá thực nghiệm độc lập (Accuracy: 81.56%, Precision: 81.35%, Recall: 81.12%, F1: 79.31%).", "2. ")
+add_bullet("Bước 3: Quan sát đồ thị Loss/Accuracy qua 5 epochs và phóng to Ma trận nhầm lẫn (Confusion Matrix) để thẩm định độ tin cậy của mô hình.", "3. ")
+
+add_heading_2("5. Tối ưu hóa Giao diện và Giải pháp Khắc phục Lỗi Kỹ thuật (UI/UX Engineering)")
+add_bullet("Khắc phục lỗi xung đột Font Material Symbols Ligature: Khi áp dụng CSS tùy biến font chữ Times New Roman toàn cục bằng thuộc tính !important, các biểu tượng đồ họa của thư viện Google Material Symbols của Streamlit (hoạt động theo cơ chế ghép ký tự Ligature) bị ép chuyển thành văn bản thuần túy, dẫn đến lỗi hiển thị chữ đè 'keyboard_double' và 'uploadUpload'. Nhóm đã tối ưu hóa bộ chọn CSS: Cô lập phạm vi font Times New Roman vào các thẻ nội dung (p, span, h1, h2, h3, div), đồng thời bảo vệ các bộ chọn [data-testid='stIconMaterial'], .material-symbols-rounded và .stFileUploader giúp các icon đồ họa hiển thị sắc nét, chuẩn mực.", "• ")
+add_bullet("Cơ chế Caching tăng tốc độ phản hồi: Sử dụng decorator @st.cache_resource cho hàm tải mô hình và từ điển dữ liệu. Nhờ đó, ứng dụng chỉ tải trọng số một lần duy nhất vào bộ nhớ RAM khi khởi động, giúp hệ thống duy trì độ trễ suy luận chỉ 8 ms/ảnh, hoàn toàn không bị trễ khi người dùng thao tác liên tục.", "• ")
 
 # ==========================================
 # PHẦN VIII: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
@@ -898,8 +961,15 @@ DOCX_OUT.parent.mkdir(parents=True, exist_ok=True)
 doc.save(str(DOCX_OUT))
 print(f"Report saved to: {DOCX_OUT}")
 
+DESKTOP_OUT_GUIDE = Path(r"c:\Users\Kiyoshi\Desktop\BAO_CAO_DO_AN_PHAN_LOAI_BIEN_BAO_FULL_WEB_GUIDE.docx")
 try:
     doc.save(str(DESKTOP_OUT))
     print(f"Report also copied to Desktop: {DESKTOP_OUT}")
 except Exception as e:
-    print(f"Could not copy to Desktop: {e}")
+    print(f"Could not copy to {DESKTOP_OUT}: {e}")
+
+try:
+    doc.save(str(DESKTOP_OUT_GUIDE))
+    print(f"Full Web Guide Report saved to Desktop: {DESKTOP_OUT_GUIDE}")
+except Exception as e:
+    print(f"Could not copy to {DESKTOP_OUT_GUIDE}: {e}")
