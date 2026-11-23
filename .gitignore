@@ -46,7 +46,7 @@ data/processed/*
 # Checkpoints & Weights
 checkpoints/*
 !checkpoints/.gitkeep
-*.pth
+!checkpoints/best_model.pth
 *.pt
 *.h5
 *.onnx
@@ -54,6 +54,7 @@ checkpoints/*
 # Outputs
 outputs/figures/*
 !outputs/figures/.gitkeep
+!outputs/figures/*.png
 outputs/logs/*
 !outputs/logs/.gitkeep
 
