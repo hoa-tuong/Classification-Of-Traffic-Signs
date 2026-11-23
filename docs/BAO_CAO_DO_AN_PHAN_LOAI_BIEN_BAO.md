@@ -165,6 +165,7 @@ Thầy: **Nguyễn Thanh Phước**
 - **Hình 3:** Đồ thị hàm mất mát (Loss) và độ chính xác (Accuracy) trong huấn luyện ............................ Trang 31
 - **Hình 4:** Ma trận nhầm lẫn (Confusion Matrix) đánh giá trên 250 lớp biển báo ................................. Trang 33
 - **Hình 5:** Giao diện ứng dụng Web Streamlit với tính năng Cắt vùng biển báo (ROI) ........................ Trang 42
+- **Hình 6:** Minh họa tính năng Trợ lý pháp luật giao thông thông minh (Explainable AI) .................. Trang 43
 
 ## DANH MỤC BẢNG BIỂU
 - **Bảng 1:** Bảng phân công nhiệm vụ và tỷ lệ đóng góp của thành viên ............................................... Trang 2
@@ -561,6 +562,43 @@ Hệ thống được đóng gói thành một ứng dụng Web hoàn chỉnh t�
 - **4 thẻ chỉ số KPI lớn:** Test Accuracy (81.56%), Macro Precision (81.35%), Macro Recall (81.12%), Macro F1-Score (79.31%).
 - **Đồ thị huấn luyện Loss & Accuracy:** Trực quan hóa quá trình hội tụ qua các epochs, chứng minh mô hình không bị Overfitting.
 - **Ma trận nhầm lẫn (Confusion Matrix):** Đánh giá chi tiết sự phân bố dự đoán trên toàn bộ 250 lớp.
+
+#### e. Điểm sáng đột phá: Trợ lý Pháp luật Giao thông Thông minh (Explainable AI)
+Khác biệt lớn nhất của đồ án so với đa số các nghiên cứu thị giác máy tính thông thường (vốn chỉ dừng lại ở việc trả về một mã nhãn rời rạc như `P.102` hay `no_entry`) là **Tính năng Trợ lý Pháp luật Giao thông Thông minh**. Trong thực tế đời sống, tài xế không chỉ cần AI cho biết biển đó tên gì, mà cần hiểu rõ:
+- **Mục đích cấm là gì?**
+- **Phương tiện nào bị cấm, xe nào được ưu tiên?**
+- **Phạm vi hiệu lực từ đâu đến đâu? Đặt ở vị trí nào trên đường?**
+- **Gặp biển này trong thực tế thì phải xử lý ra sao?**
+- **Có mẹo gì để ghi nhớ tức thì khi đang lái xe tốc độ cao?**
+
+Hệ thống đã số hóa toàn văn quy chuẩn QCVN 41:2019/BGTVT, phân tích sâu và cung cấp cấu trúc giải thích 4 phần rõ ràng cho từng biển báo:
+
+> **[Minh Họa Điển Hình]: Kết quả Trích xuất Tự động cho Biển số P.102 “Cấm đi ngược chiều”**
+> 
+> ⛔ **1. Ý nghĩa quy định của biển báo:**
+> - Biển tròn nền đỏ, vạch ngang màu trắng ở giữa, báo cấm tất cả phương tiện (cơ giới và thô sơ) đi vào theo chiều đặt biển.
+> - **Mục đích:** Ngăn phương tiện đi sai chiều vào đường một chiều, nhánh ra/vào, hầm/đường hẹp… để phòng tránh xung đột trực diện gây tai nạn nghiêm trọng.
+> - **Ngoại lệ:** Xe được quyền ưu tiên theo quy định của Luật Giao thông đường bộ khi đang làm nhiệm vụ khẩn cấp (xe chữa cháy, xe công an, xe quân sự, xe cứu thương…) được phép đi theo chỉ đạo nghiệp vụ.
+> - **Người đi bộ:** Vẫn được đi trên vỉa hè hoặc lề đường (tuân thủ quy tắc dành cho người đi bộ), không đi tràn xuống phần xe chạy.
+> 
+> 📍 **2. Phạm vi tác dụng & Vị trí đặt biển:**
+> - Phạm vi cấm bắt đầu ngay tại vị trí đặt biển và áp dụng cho hướng tiến thẳng qua biển vào đoạn đường phía trước.
+> - Biển chỉ cấm “hành vi đi vào” từ phía đặt biển. Phương tiện đang lưu thông đúng chiều trong đoạn đường đó không bị ảnh hưởng.
+> - Thông thường đặt ở:
+>   + Đầu vào của đường một chiều (đầu “cấm”).
+>   + Lối ra của bãi đỗ, trạm xăng, hầm chui, nhánh ra/cửa ra đường cao tốc… để ngăn đi ngược chiều.
+> - Không cần biển “hết cấm” vì đây là biển cấm theo hướng vào; hiệu lực chỉ ở miệng vào nơi đặt biển.
+> - Có thể kèm biển phụ (thời gian, đối tượng…) nếu cần giới hạn theo thời gian hoặc loại xe cụ thể.
+> 
+> 🚗 **3. Ví dụ thực tế trên đường phố:**
+> - Bạn đến giao lộ và thấy biển P.102 gắn ở đầu một con phố. Điều đó có nghĩa: **Bạn tuyệt đối không được rẽ vào con phố đó từ hướng bạn đang tới!** Hãy chọn hướng khác (rẽ sang đường khác hoặc đi thẳng nếu được phép). Các xe đang chạy trong con phố theo chiều đúng vẫn di chuyển bình thường, còn bạn tuyệt đối không chui qua biển để đi vào.
+> 
+> ✅ **4. Mẹo ghi nhớ nhanh dành cho tài xế:**
+> - Thấy P.102 = *“Đừng đi vào lối này - Đường một chiều!”*.
+> - Thường đi kèm đối ứng với biển R.407a *“Đường một chiều”* ở đầu còn lại để chỉ chiều lưu thông hợp lệ.
+
+![Hình 6: Minh họa giao diện Trợ lý Pháp luật Giao thông Thông minh (Explainable AI) đối với Biển P.102](file:///c:/ML/Classification-Of-Traffic-Signs/outputs/figures/explainable_ai_demo.png)  
+*Hình 6: Minh họa giao diện Trợ lý Pháp luật Giao thông Thông minh (Explainable AI) đối với Biển P.102: Toàn văn ý nghĩa quy định, phạm vi tác dụng, ví dụ thực tế và mẹo ghi nhớ nhanh*
 
 ---
 

@@ -373,7 +373,8 @@ figs_list = [
     ("Hình 2", "Biểu đồ so sánh định lượng hiệu suất thực nghiệm giữa 4 mô hình", "29"),
     ("Hình 3", "Đồ thị hàm mất mát (Loss) và độ chính xác (Accuracy) trong huấn luyện", "31"),
     ("Hình 4", "Ma trận nhầm lẫn (Confusion Matrix) đánh giá trên 250 lớp biển báo", "33"),
-    ("Hình 5", "Giao diện ứng dụng Web Streamlit với tính năng Cắt vùng biển báo (ROI)", "42")
+    ("Hình 5", "Giao diện ứng dụng Web Streamlit với tính năng Cắt vùng biển báo (ROI)", "42"),
+    ("Hình 6", "Minh họa tính năng Trợ lý pháp luật giao thông thông minh (Explainable AI)", "43")
 ]
 for f_id, f_desc, f_page in figs_list:
     p_f = doc.add_paragraph()
@@ -881,6 +882,18 @@ add_heading_3("d. Tab 3 - Phân hệ Giám sát Hiệu suất Mô hình (Model P
 add_bullet("4 thẻ chỉ số KPI lớn: Test Accuracy (81.56%), Macro Precision (81.35%), Macro Recall (81.12%), Macro F1-Score (79.31%).", "• ")
 add_bullet("Đồ thị huấn luyện Loss & Accuracy: Trực quan hóa quá trình hội tụ qua các epochs, chứng minh mô hình không bị Overfitting.", "• ")
 add_bullet("Ma trận nhầm lẫn (Confusion Matrix): Đánh giá chi tiết sự phân bố dự đoán trên toàn bộ 250 lớp.", "• ")
+
+add_heading_3("e. Điểm sáng đột phá: Trợ lý Pháp luật Giao thông Thông minh (Explainable AI)")
+add_body("Khác biệt lớn nhất của đồ án so với đa số các nghiên cứu thị giác máy tính thông thường (vốn chỉ dừng lại ở việc trả về một mã nhãn rời rạc như P.102 hay no_entry) là Tính năng Trợ lý Pháp luật Giao thông Thông minh. Trong thực tế đời sống, tài xế không chỉ cần AI cho biết biển đó tên gì, mà cần hiểu rõ: Mục đích cấm là gì? Phương tiện nào bị cấm, xe nào được ưu tiên? Phạm vi hiệu lực từ đâu đến đâu? Gặp biển này trong thực tế thì phải xử lý ra sao? Và có mẹo gì để ghi nhớ tức thì khi đang lái xe tốc độ cao?")
+add_body("Hệ thống đã số hóa toàn văn quy chuẩn QCVN 41:2019/BGTVT, phân tích sâu và cung cấp cấu trúc giải thích 4 phần rõ ràng cho từng biển báo:")
+
+add_body("Minh họa điển hình: Kết quả trích xuất tự động cho Biển số P.102 'Cấm đi ngược chiều':", bold=True)
+add_bullet("1. Ý nghĩa quy định của biển báo: Biển tròn nền đỏ, vạch ngang màu trắng ở giữa, báo cấm tất cả phương tiện (cơ giới và thô sơ) đi vào theo chiều đặt biển. Mục đích: Ngăn phương tiện đi sai chiều vào đường một chiều, nhánh ra/vào, hầm/đường hẹp… để phòng tránh xung đột trực diện gây tai nạn nghiêm trọng. Ngoại lệ: Xe được quyền ưu tiên theo Luật Giao thông (Cứu hỏa, Công an, Quân sự, Cứu thương khi làm nhiệm vụ khẩn cấp) được phép đi vào. Người đi bộ vẫn được đi trên vỉa hè hoặc lề đường.", "• ")
+add_bullet("2. Phạm vi tác dụng & Vị trí đặt biển: Bắt đầu ngay tại vị trí đặt biển và áp dụng cho hướng tiến thẳng qua biển vào đoạn đường phía trước. Chỉ cấm hành vi 'đi vào' từ phía đặt biển; xe lưu thông đúng chiều trong đoạn đường đó không bị ảnh hưởng. Thường đặt ở: Đầu vào của đường một chiều; lối ra của bãi đỗ, trạm xăng, hầm chui, nhánh ra đường cao tốc. Không cần biển 'Hết cấm' vì chỉ có hiệu lực ở miệng vào nơi đặt biển.", "• ")
+add_bullet("3. Ví dụ thực tế trên đường phố: Bạn đến giao lộ và thấy biển P.102 gắn ở đầu một con phố. Điều đó có nghĩa: Bạn tuyệt đối không được rẽ vào con phố đó từ hướng bạn đang tới! Hãy tiếp tục đi thẳng hoặc rẽ sang hướng khác. Các xe đang chạy từ trong con phố đó đi ra vẫn di chuyển bình thường, còn chiều đi vào của bạn đã bị cấm hoàn toàn.", "• ")
+add_bullet("4. Mẹo ghi nhớ nhanh dành cho tài xế: Thấy biển tròn đỏ gạch trắng P.102 = 'ĐỪNG ĐI VÀO LỐI NÀY - ĐƯỜNG MỘT CHIỀU!'. Thường đi kèm đối ứng với biển R.407a 'Đường một chiều' được cắm ở đầu còn lại để chỉ chiều lưu thông hợp lệ.", "• ")
+
+add_image_box(FIG_DIR / "explainable_ai_demo.png", "Hình 6: Minh họa giao diện Trợ lý Pháp luật Giao thông Thông minh (Explainable AI) đối với Biển P.102: Toàn văn ý nghĩa quy định, phạm vi tác dụng, ví dụ thực tế và mẹo ghi nhớ nhanh", width=Inches(6.2))
 
 add_heading_2("3. Hướng dẫn Cài đặt và Khởi chạy Ứng dụng (Setup & Run Guide)")
 add_body("Để triển khai và chạy thử nghiệm hệ thống trên bất kỳ máy tính cá nhân hoặc máy chủ nào, quy trình cài đặt được thực hiện đơn giản qua các bước sau:")
