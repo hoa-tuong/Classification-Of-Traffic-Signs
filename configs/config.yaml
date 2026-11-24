@@ -12,7 +12,7 @@ data:
   processed_dir: "data/processed"
   summary_csv: "data/processed/dataset_summary.csv"
   labels_path: "data/class_labels.csv"
-  img_size: [64, 64] # [width, height]
+  img_size: [128, 128] # [width, height]
   batch_size: 64
   num_workers: 0     # 0 an toàn nhất trên Windows
 
